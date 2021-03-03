@@ -2,7 +2,7 @@
     "name": "@noahvarghese/web-app-template",
     "version": "1.0.3",
     "description": "",
-    "main": "./src/index.js",
+    "main": "./src/web-app-template.js",
     "type": "module",
     "scripts": {},
     "repository": {
@@ -19,7 +19,7 @@
     ],
     "author": "Noah Varghese <varghese.noah@gmail.com> (https://noahvarghese.me)",
     "license": "ISC",
-    "bin": "./src/cli/index.js",
+    "bin": "./cli.js",
     "bugs": {
         "url": "https://github.com/noahvarghese/web-app-template/issues"
     },

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import createWebAppTemplate from "..";
+import createWebAppTemplate from "./src/web-app-template";
 import frontend, {
     name
-} from "./args";
+} from "./cli/args";
 
 createWebAppTemplate(name, frontend);
