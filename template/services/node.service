@@ -1,0 +1,13 @@
+[Unit]
+Description=Service For WebApp
+StartLimitIntervalSec=500
+StartLimitBurst=5
+
+[Service]
+WorkingDirectory=/var/www/athios.noahvarghese.me
+ExecStart=/usr/bin/npm run dev
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
