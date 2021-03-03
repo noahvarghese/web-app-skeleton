@@ -1,4 +1,4 @@
-#!/usr/bin/node
+#!/usr/bin/env node
 
 import createWebAppTemplate from "../index";
 import frontend, {

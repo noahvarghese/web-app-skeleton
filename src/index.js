@@ -21,8 +21,8 @@ const createWebAppTemplate = async (name, frontend) => {
     Logs.addLog(`Creating web app ${name}`, LogLevels.LOG);
     await exec(`mkdir ${name} && cd ${name}`);
     await createFrontend(frontend);
-    await createServer();
-    await createTest();
+    await createProject(server);
+    await createProject(test);
     Logs.addLog(`Setup of ${name} complete.`, LogLevels.LOG);
 }
 
@@ -88,11 +88,11 @@ const createFrontend = async (frontend) => {
     // TODO change port in server/src/config/index.ts file when serving the vue or react development server
 }
 
-const createServer = async () => {
-    Logs.addLog("Creating server folder.", LogLevels.LOG);
+const createProject = async (project) => {
+    Logs.addLog(`Creating ${project.name} folder.`, LogLevels.LOG);
 
 
-    await exec("mkdir server && cd server");
+    await exec(`mkdir ${project.name} && cd ${project.name}`);
     await initNpm();
 
     // TODO copy scripts to new package.json
@@ -100,38 +100,13 @@ const createServer = async () => {
     const {
         dependencies,
         devDependencies
-    } = getTypesAndPackages(server.dependencies);
+    } = getTypesAndPackages(project.dependencies);
 
     installDependencies(dependencies);
     installDependencies(devDependencies, true);
-    installDependencies(server.devDependencies.join(" "), true);
+    installDependencies(project.devDependencies.join(" "), true);
 
     await initTypescript();
-
-    await exec("cd ..");
-};
-
-const createTest = async () => {
-    Logs.addLog("Creating test folder.", LogLevels.LOG);
-
-    await exec("mkdir test && cd test");
-    await initNpm();
-
-    // TODO copy scripts to new package.json
-
-    const {
-        dependencies,
-        devDependencies
-    } = getTypesAndPackages(test.dependencies);
-
-    installDependencies(dependencies);
-    installDependencies(devDependencies, true);
-    installDependencies(test.devDependencies.join(" "), true);
-
-    await initTypescript();
-
-    fse.copySync(globalThis.modulePath + "/template/test", globalThis.projectPath + "/test");
-    fse.copySync(globalThis.modulePath + "/template/server", globalThis.projectPath + "/server");
 
     await exec("cd ..");
 };
