@@ -1,25 +1,31 @@
 import fs from "fs";
 import fse from "fs-extra";
-import exec from "./lib/exec"
+import {
+    getInstalledPath
+} from "get-installed-path";
+import exec from "./lib/exec.js"
 import Logs, {
     LogLevels
-} from "./lib/logs";
-import server from "./types/server";
-import test from "./types/test";
+} from "./lib/logs.js";
+import server from "./types/server.js";
+import test from "./types/test.js";
+import path from "path";
+
+const __dirname = await getInstalledPath("web-app-template");
 
 
 const createWebAppTemplate = async (name, frontend) => {
 
-    globalThis.modulePath = __dirname;
-    globalThis.projectPath = process.cwd() + name;
+    // globalThis.modulePath = require.resolve("web-app-template");
+    globalThis.projectPath = process.cwd() + "/" + name;
 
     console.log(__dirname);
     console.log(process.cwd());
     console.log(globalThis.modulePath);
     console.log(globalThis.projectPath);
 
-    Logs.addLog(`Creating web app ${name}`, LogLevels.LOG);
-    await exec(`mkdir ${name} && cd ${name}`);
+    Logs.addLog(`Creating web app - ${name}`, LogLevels.LOG);
+    await exec(`mkdir ${name}`);
     await createFrontend(frontend);
     await createProject(server);
     await createProject(test);
@@ -67,8 +73,8 @@ const createFrontend = async (frontend) => {
 
     Logs.addLog("Scaffolding frontend.", LogLevels.LOG);
 
-    // requries user input
-    await exec(`${frontend.basePackage.cmd} ${frontend.basePackage.options} && cd ${globalThis.projectPath}/client`, false);
+    // requries user input maybe
+    await exec(`cd ${globalThis.projectPath} && ${frontend.basePackage.cmd} ${frontend.basePackage.options}`, false);
 
 
     const {
@@ -83,7 +89,6 @@ const createFrontend = async (frontend) => {
     Logs.addLog("Installing frontend development dependencies.", LogLevels.LOG);
     installDependencies(frontend.devDependencies.join(" "), true);
 
-    await exec("cd ..");
 
     // TODO change port in server/src/config/index.ts file when serving the vue or react development server
 }
@@ -102,19 +107,18 @@ const createProject = async (project) => {
         devDependencies
     } = getTypesAndPackages(project.dependencies);
 
-    installDependencies(dependencies);
-    installDependencies(devDependencies, true);
-    installDependencies(project.devDependencies.join(" "), true);
+    await installDependencies(dependencies);
+    await installDependencies(devDependencies, true);
+    await installDependencies(project.devDependencies.join(" "), true);
 
     await initTypescript();
 
-    await exec("cd ..");
 };
 
 const getTypesAndPackages = (packagesArray) => {
     if (Array.isArray(packagesArray)) {
-        const dependencies = packagesArray.map((package) => package.package).join(" ");
-        const devDependencies = packagesArray.map((package) => package.types).filter((type) => type != null).join(" ");
+        const dependencies = packagesArray.map((pkg) => pkg.package).join(" ");
+        const devDependencies = packagesArray.map((pkg) => pkg.types).filter((type) => type != null).join(" ");
 
         return {
             dependencies,
@@ -124,12 +128,13 @@ const getTypesAndPackages = (packagesArray) => {
     throw new Error("Not an array");
 }
 
-const installDependencies = (dependencies, dev = false) => {
-    if (Array.isArray(dependencies)) {
-        dependencies.forEach(async (dep) => await exec(`npm i ${dev ? "-D" : ""} ${dep}`));
-        return;
+const installDependencies = async (dependencies, dev = false) => {
+    if (typeof dependencies !== "string") {
+        throw new Error("Not a string");
     }
-    throw new Error("Not an array");
+
+    await exec(`npm i ${dev ? "-D" : ""} ${dependencies}`, false);
+    return;
 }
 
 const initNpm = async () => await exec("npm init -y");

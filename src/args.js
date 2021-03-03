@@ -1,8 +1,8 @@
-import yargs from "yargs";
-import react from "../../types/react";
-import vue from "../../types/vue";
+import yargs from "../node_modules/yargs/index.mjs";
+import react from "./types/react.js";
+import vue from "./types/vue.js";
 
-const argv = yargs.options({
+const argv = yargs(process.argv.slice(2)).options({
     "f": {
         alias: "frontend",
         describe: "Choose between React or Vue for frontend.",

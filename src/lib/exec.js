@@ -3,7 +3,7 @@ import {
 } from "child_process";
 import Logs, {
     LogLevels
-} from "./logs";
+} from "./logs.js";
 
 export default (cmd, outputToNull = true) => {
     return new Promise((resolve, reject) => {

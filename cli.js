@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
-import createWebAppTemplate from "./src/web-app-template";
+import createWebAppTemplate from "./src/web-app-template.js";
 import frontend, {
     name
-} from "./src/args";
+} from "./src/args.js";
 
-createWebAppTemplate(name, frontend);
+(async () => {
+    await createWebAppTemplate(name, frontend);
+})();

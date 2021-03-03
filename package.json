@@ -1,6 +1,6 @@
 {
     "name": "@noahvarghese/web-app-template",
-    "version": "1.0.4",
+    "version": "1.0.01",
     "description": "",
     "main": "./src/web-app-template.js",
     "type": "module",
@@ -27,6 +27,7 @@
     "dependencies": {
         "fs": "^0.0.1-security",
         "fs-extra": "^9.1.0",
+        "get-installed-path": "^4.0.8",
         "path": "^0.12.7",
         "yargs": "^16.2.0"
     }

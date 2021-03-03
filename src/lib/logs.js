@@ -1,7 +1,3 @@
-// tslint:disable: no-console
-import dotenv from "dotenv";
-dotenv.config();
-
 export const LogLevels = {
     EVENT: 0,
     ERROR: 1,
