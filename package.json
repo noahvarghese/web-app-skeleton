@@ -1,8 +1,9 @@
 {
     "name": "@noahvarghese/web-app-template",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "",
     "main": "./src/index.js",
+    "type": "module",
     "scripts": {},
     "repository": {
         "type": "git",
