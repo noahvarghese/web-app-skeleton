@@ -3,6 +3,6 @@
 import createWebAppTemplate from "./src/web-app-template";
 import frontend, {
     name
-} from "./cli/args";
+} from "./src/args";
 
 createWebAppTemplate(name, frontend);

@@ -3,7 +3,7 @@ import fse from "fs-extra";
 import exec from "./lib/exec"
 import Logs, {
     LogLevels
-} from "./lib/Logs";
+} from "./lib/logs";
 import server from "./types/server";
 import test from "./types/test";
 
