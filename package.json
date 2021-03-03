@@ -1,6 +1,6 @@
 {
     "name": "@noahvarghese/web-app-template",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "",
     "main": "./src/web-app-template.js",
     "type": "module",
