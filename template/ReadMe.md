@@ -1,3 +1,3 @@
 # About
 
-This site has been scaffolded via web-app-template
+This site has been scaffolded via @noahvarghese/web-app-template

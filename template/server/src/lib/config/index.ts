@@ -7,7 +7,7 @@ let permalink: string;
 let port: number = 4000;
 
 if (dev) {
-    permalink = "http://localhost:3000";
+    permalink = "http://localhost:4000";
 } else if (test) {
     permalink = process.env.TEST_ENV!;
     port = 4001;

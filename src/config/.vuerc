@@ -1,0 +1,26 @@
+{
+  "useTaobaoRegistry": false,
+  "presets": {
+    "default-vuerc": {
+      "useConfigFiles": false,
+      "plugins": {
+        "@vue/cli-plugin-babel": {},
+        "@vue/cli-plugin-typescript": {
+          "classComponent": false,
+          "useTsWithBabel": true
+        },
+        "@vue/cli-plugin-router": {
+          "historyMode": true
+        },
+        "@vue/cli-plugin-vuex": {},
+        "@vue/cli-plugin-eslint": {
+          "config": "prettier",
+          "lintOn": [
+            "save"
+          ]
+        }
+      },
+      "vueVersion": "3"
+    }
+  }
+}

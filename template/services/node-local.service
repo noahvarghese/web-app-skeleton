@@ -4,7 +4,7 @@ StartLimitIntervalSec=500
 StartLimitBurst=5
 
 [Service]
-WorkingDirectory=/var/www/[PROJECTNAME]
+WorkingDirectory=[PROJECTPATH]
 ExecStart=/usr/bin/npm run dev
 Restart=on-failure
 RestartSec=5s

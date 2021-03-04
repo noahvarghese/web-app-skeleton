@@ -3,7 +3,7 @@ export default {
     basePackage: {
         name: "@vue/cli",
         cmd: "vue",
-        options: "create client"
+        options: "create -p default-vuerc client -n"
     },
     dependencies: [{
             package: "vue-router",

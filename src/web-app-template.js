@@ -1,5 +1,6 @@
 import fs from "fs";
 import fse from "fs-extra";
+import os from "os";
 import {
     getInstalledPath
 } from "get-installed-path";
@@ -9,26 +10,44 @@ import Logs, {
 } from "./lib/logs.js";
 import server from "./types/server.js";
 import test from "./types/test.js";
-import path from "path";
 
-const __dirname = await getInstalledPath("web-app-template");
-
+const homeDir = os.homedir();
 
 const createWebAppTemplate = async (name, frontend) => {
 
-    // globalThis.modulePath = require.resolve("web-app-template");
+    globalThis.modulePath = await getInstalledPath("web-app-template");;
     globalThis.projectPath = process.cwd() + "/" + name;
 
-    console.log(__dirname);
-    console.log(process.cwd());
-    console.log(globalThis.modulePath);
-    console.log(globalThis.projectPath);
+    if (fs.existsSync(globalThis.projectPath)) {
+        Logs.addLog(`Directory ${globalThis.projectPath} already exists.`, LogLevels.ERROR);
+        return;
+    }
 
     Logs.addLog(`Creating web app - ${name}`, LogLevels.LOG);
     await exec(`mkdir ${name}`);
+
+    let moved = false;
+    if (frontend.basePackage.name.toLowerCase() === "vue") {
+        if (fs.existsSync(homeDir + "/.vuerc")) {
+            moved = true;
+            fse.moveSync(homeDir + "/.vuerc", homeDir + "/.oldvuerc");
+        }
+
+        fs.copyFileSync(globalThis.modulePath + "/src/config/.vuerc", homeDir + "/.vuerc");
+    }
+
     await createFrontend(frontend);
+
+    if (moved) {
+        fs.unlinkSync(homeDir + "/.vuerc");
+        fse.moveSync(homeDir + "/.oldvuerc", homeDir + "/.vuerc");
+    }
+
+    updateFrontendPort(frontend);
+    updateServiceFiles(name);
     await createProject(server);
     await createProject(test);
+    fse.copySync(globalThis.modulePath + "/template/", globalThis.projectPath);
     Logs.addLog(`Setup of ${name} complete.`, LogLevels.LOG);
 }
 
@@ -46,8 +65,46 @@ const globalPackageInstall = async (packageName, sudo = false) => {
     }
 }
 
+const updateFrontendPort = (frontend) => {
+    let port;
+    if (frontend.basePackage.name.toLowerCase() === "react") {
+        port = 3000;
+    } else {
+        port = 8080;
+    }
+
+    const portFilePath = globalThis.modulePath + "/template/server/src/lib/routes/dev.ts";
+    let fileContents = fs.readFileSync(portFilePath).toString();
+    fileContents = fileContents.replace("[PORT]", port);
+    fs.writeFileSync(portFilePath, fileContents);
+    // need to format somehow
+}
+
+const updateServiceFiles = (projectName) => {
+    const files = [globalThis.modulePath + "/template/services/node-test.service", globalThis.modulePath + "/template/services/node-test.service", globalThis.modulePath + "/template/services/node.service"];
+    files.forEach((file, index) => {
+        let contents = fs.readFileSync(file).toString();
+        if (index === 0) {
+            projectName = "test." + projectName;
+        }
+        contents = contents.replace("[PROJECTNAME]", projectName);
+        fs.writeFileSync(file, contents);
+    });
+
+    const localService = globalThis.modulePath + "/template/services/node-local.service";
+    let contents = fs.readFileSync(localService).toString();
+    contents = contents.replace("[PROJECTPATH]", globalThis.projectPath + "/" + projectName);
+    fs.writeFileSync(localService, contents);
+};
+
 const attemptGlobalPackageInstalls = async (globalPackage) => {
-    const exists = (await exec(`npm list --depth 1 --global ${globalPackage} | grep empty`, false)).length > 0;
+    let exists;
+    try {
+        const packages = (await exec(`npm list --depth 1 --global ${globalPackage} | grep empty`, false));
+        exists = packages ? packages.length > 0 : false;
+    } catch (e) {
+        exists = true;
+    }
 
     if (!exists) {
 
@@ -69,6 +126,8 @@ const attemptGlobalPackageInstalls = async (globalPackage) => {
 
 const createFrontend = async (frontend) => {
 
+    const projectPath = globalThis.projectPath + "/client";
+
     await attemptGlobalPackageInstalls(frontend.basePackage.name);
 
     Logs.addLog("Scaffolding frontend.", LogLevels.LOG);
@@ -83,36 +142,53 @@ const createFrontend = async (frontend) => {
     } = getTypesAndPackages(frontend.dependencies);
 
     Logs.addLog("Installing frontend dependencies.", LogLevels.LOG);
-    installDependencies(dependencies);
+    installDependencies(projectPath, dependencies);
     Logs.addLog("Installing frontend types.", LogLevels.LOG);
-    installDependencies(devDependencies, true);
+    installDependencies(projectPath, devDependencies, true);
     Logs.addLog("Installing frontend development dependencies.", LogLevels.LOG);
-    installDependencies(frontend.devDependencies.join(" "), true);
-
-
-    // TODO change port in server/src/config/index.ts file when serving the vue or react development server
+    installDependencies(projectPath, frontend.devDependencies.join(" "), true);
+    fs.rmdirSync(projectPath + "/.git", {
+        recursive: true
+    });
 }
 
 const createProject = async (project) => {
+    const projectPath = globalThis.projectPath + "/" + project.name;
+
     Logs.addLog(`Creating ${project.name} folder.`, LogLevels.LOG);
 
 
-    await exec(`mkdir ${project.name} && cd ${project.name}`);
-    await initNpm();
+    await exec(`cd ${globalThis.projectPath} && mkdir ${project.name}`);
+    Logs.addLog(`Initializing package.json for ${project.name}.`, LogLevels.LOG);
+    await initNpm(projectPath);
 
-    // TODO copy scripts to new package.json
+    const packageJSON = JSON.parse(fs.readFileSync(projectPath + "/package.json"));
+    packageJSON.scripts = {};
+
+    const scripts = project.scripts;
+
+    if (Array.isArray(scripts)) {
+        scripts.forEach((script) => {
+            packageJSON.scripts[script.key] = script.value;
+        });
+    }
+
+    fs.writeFileSync(projectPath + "/package.json", JSON.stringify(packageJSON));
 
     const {
         dependencies,
         devDependencies
     } = getTypesAndPackages(project.dependencies);
 
-    await installDependencies(dependencies);
-    await installDependencies(devDependencies, true);
-    await installDependencies(project.devDependencies.join(" "), true);
+    Logs.addLog(`Installing ${project.name} dependencies.`, LogLevels.LOG);
+    await installDependencies(projectPath, dependencies);
+    Logs.addLog(`Installing ${project.name} types.`, LogLevels.LOG);
+    await installDependencies(projectPath, devDependencies, true);
+    Logs.addLog(`Installing ${project.name} development dependencies.`, LogLevels.LOG);
+    await installDependencies(projectPath, project.devDependencies.join(" "), true);
 
-    await initTypescript();
-
+    Logs.addLog(`Setting up typescript for ${project.name}.`, LogLevels.LOG);
+    await initTypescript(projectPath);
 };
 
 const getTypesAndPackages = (packagesArray) => {
@@ -128,22 +204,22 @@ const getTypesAndPackages = (packagesArray) => {
     throw new Error("Not an array");
 }
 
-const installDependencies = async (dependencies, dev = false) => {
+const installDependencies = async (projPath, dependencies, dev = false) => {
     if (typeof dependencies !== "string") {
         throw new Error("Not a string");
     }
 
-    await exec(`npm i ${dev ? "-D" : ""} ${dependencies}`, false);
+    await exec(`cd ${projPath} && npm i ${dev ? "-D" : ""} ${dependencies}`, false);
     return;
 }
 
-const initNpm = async () => await exec("npm init -y");
-const initTypescript = async (folderName) => {
-    await exec("./node_modules/.bin/tsc --init");
-    await exec("./node_modules/.bin/tslint --init");
+const initNpm = async (projPath) => await exec(`cd ${projPath} && npm init -y`);
+const initTypescript = async (projPath) => {
+    await exec(`cd ${projPath} && ./node_modules/.bin/tsc --init`);
 
-    fs.copyFileSync(globalThis.modulePath + "/src/config/tsconfig.json", globalThis.projectPath + "/" + folderName + "/tsconfig.json");
-    fs.copyFileSync(globalThis.modulePath + "/src/config/tslint.json", globalThis.projectPath + "/" + folderName + "/tslint.json");
+    fs.copyFileSync(globalThis.modulePath + "/src/config/tsconfig.json", projPath + "/tsconfig.json");
+    fs.copyFileSync(globalThis.modulePath + "/src/config/.eslintrc.js", projPath + "/.eslintrc.js");
+    fs.copyFileSync(globalThis.modulePath + "/src/config/.eslintignore", projPath + "/.eslintignore");
 }
 
 export default createWebAppTemplate

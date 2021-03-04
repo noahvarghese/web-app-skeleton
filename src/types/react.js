@@ -15,7 +15,6 @@ export default {
         },
         {
             package: "redux",
-            types: "@types/redux"
         },
         {
             package: "react-redux",

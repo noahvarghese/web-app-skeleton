@@ -37,19 +37,22 @@ export default {
         },
         {
             package: "path",
-            types: "@types/path"
         },
         {
             package: "typeorm",
-            types: "@types/typeorm"
         },
     ],
     devDependencies: [
         "dotenv",
         "nodemon",
         "ts-node",
-        "tslint",
         "typescript",
+        "eslint",
+        "eslint-config-prettier",
+        "eslint-plugin-jsdoc",
+        "eslint-plugin-prefer-arrow",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
     ],
     scripts: [{
             key: "build",
@@ -66,6 +69,10 @@ export default {
         {
             key: "move-frontend-to-server",
             value: "cd ../client && npm run build && mv ./dist/* ../server/views"
+        },
+        {
+            key: "lint",
+            value: "eslint . --ext .ts"
         },
     ]
 }

@@ -4,17 +4,20 @@ export default {
     devDependencies: [
         "@cucumber/cucumber",
         "@types/chai",
-        "@types/cucumber",
         "@types/node",
-        "@types/selenium-web-driver",
+        "@types/selenium-webdriver",
         "chai",
         "chromedriver",
-        "cucumber-pretty",
         "dotenv",
         "selenium-webdriver",
         "ts-node",
-        "tslint",
-        "typescript"
+        "typescript",
+        "eslint",
+        "eslint-config-prettier",
+        "eslint-plugin-jsdoc",
+        "eslint-plugin-prefer-arrow",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
     ],
     scripts: [{
             key: "start",
@@ -31,6 +34,10 @@ export default {
         {
             key: "test",
             value: "./node_modules/.bin/cucumber-js -p default"
+        },
+        {
+            key: "lint",
+            value: "eslint . --ext .ts"
         },
     ]
 }
