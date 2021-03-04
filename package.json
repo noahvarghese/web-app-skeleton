@@ -1,8 +1,8 @@
 {
     "name": "web-app-skeleton",
-    "version": "1.0.03",
+    "version": "1.0.4",
     "description": "",
-    "main": "./src/web-app-template.js",
+    "main": "./cli.js",
     "type": "module",
     "scripts": {},
     "repository": {
