@@ -1,5 +1,5 @@
 {
-    "name": "@noahvarghese/web-app-template",
+    "name": "@noahvarghese/web-app-skeleton",
     "version": "1.0.01",
     "description": "",
     "main": "./src/web-app-template.js",
