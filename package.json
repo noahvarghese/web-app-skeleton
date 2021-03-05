@@ -1,29 +1,31 @@
 {
     "name": "web-app-skeleton",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "description": "",
     "main": "./cli.js",
     "type": "module",
     "scripts": {},
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/noahvarghese/web-app-template.git"
+        "url": "git+https://github.com/noahvarghese/web-app-skeleton.git"
     },
     "keywords": [
-        "react",
-        "vue",
         "node",
-        "web app",
+        "react",
+        "scaffold",
+        "skeleton",
         "template",
-        "scaffold"
+        "typescript",
+        "vue",
+        "web app"
     ],
     "author": "Noah Varghese <varghese.noah@gmail.com> (https://noahvarghese.me)",
     "license": "ISC",
     "bin": "./cli.js",
     "bugs": {
-        "url": "https://github.com/noahvarghese/web-app-template/issues"
+        "url": "https://github.com/noahvarghese/web-app-skeleton/issues"
     },
-    "homepage": "https://github.com/noahvarghese/web-app-template#readme",
+    "homepage": "https://github.com/noahvarghese/web-app-skeleton#readme",
     "dependencies": {
         "fs": "^0.0.1-security",
         "fs-extra": "^9.1.0",
