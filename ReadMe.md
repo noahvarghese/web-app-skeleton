@@ -1,4 +1,4 @@
-# web-app-template
+# web-app-skeleton
 
 ## About
 
@@ -15,6 +15,6 @@ Currently works on Linux only.
 -   execute with project name
 
 ```bash
-    $ npm i -g web-app-template
-    $ web-app-template -n pathToProject [-f React | Vue]
+    $ npm i -g web-app-skeleton
+    $ web-app-skeleton -n pathToProject [-f React | Vue]
 ```
