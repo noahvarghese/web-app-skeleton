@@ -15,7 +15,7 @@ const homeDir = os.homedir();
 
 const createWebAppTemplate = async (name, frontend) => {
 
-    globalThis.modulePath = await getInstalledPath("web-app-template");;
+    globalThis.modulePath = await getInstalledPath("web-app-skeleton");;
     globalThis.projectPath = process.cwd() + "/" + name;
 
     if (fs.existsSync(globalThis.projectPath)) {
