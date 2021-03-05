@@ -26,6 +26,8 @@ const createWebAppTemplate = async (name, frontend) => {
     Logs.addLog(`Creating web app - ${name}`, LogLevels.LOG);
     await exec(`mkdir ${name}`);
 
+    await attemptGlobalPackageInstalls(frontend.basePackage.name);
+
     let moved = false;
     if (frontend.name.toLowerCase() === "vue") {
         if (fs.existsSync(homeDir + "/.vuerc")) {
@@ -39,8 +41,8 @@ const createWebAppTemplate = async (name, frontend) => {
 
     await createFrontend(frontend);
 
+    fs.unlinkSync(homeDir + "/.vuerc");
     if (moved) {
-        fs.unlinkSync(homeDir + "/.vuerc");
         fse.moveSync(homeDir + "/.oldvuerc", homeDir + "/.vuerc");
     }
 
@@ -128,8 +130,6 @@ const attemptGlobalPackageInstalls = async (globalPackage) => {
 const createFrontend = async (frontend) => {
 
     const projectPath = globalThis.projectPath + "/client";
-
-    await attemptGlobalPackageInstalls(frontend.basePackage.name);
 
     Logs.addLog("Scaffolding frontend.", LogLevels.LOG);
 
