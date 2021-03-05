@@ -27,13 +27,14 @@ const createWebAppTemplate = async (name, frontend) => {
     await exec(`mkdir ${name}`);
 
     let moved = false;
-    if (frontend.basePackage.name.toLowerCase() === "vue") {
+    if (frontend.name.toLowerCase() === "vue") {
         if (fs.existsSync(homeDir + "/.vuerc")) {
             moved = true;
             fse.moveSync(homeDir + "/.vuerc", homeDir + "/.oldvuerc");
         }
-
-        fs.copyFileSync(globalThis.modulePath + "/src/config/.vuerc", homeDir + "/.vuerc");
+	else {
+            fs.copyFileSync(globalThis.modulePath + "/src/config/.vuerc", homeDir + "/.vuerc");
+	}
     }
 
     await createFrontend(frontend);
@@ -100,8 +101,8 @@ const updateServiceFiles = (projectName) => {
 const attemptGlobalPackageInstalls = async (globalPackage) => {
     let exists;
     try {
-        const packages = (await exec(`npm list --depth 1 --global ${globalPackage} | grep empty`, false));
-        exists = packages ? packages.length > 0 : false;
+        const empty = (await exec(`npm list --depth 1 --global ${globalPackage} | grep empty`, false));
+        exists = !(empty ? empty.length > 0 : false);
     } catch (e) {
         exists = true;
     }
