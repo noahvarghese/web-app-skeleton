@@ -33,10 +33,9 @@ const createWebAppTemplate = async (name, frontend) => {
         if (fs.existsSync(homeDir + "/.vuerc")) {
             moved = true;
             fse.moveSync(homeDir + "/.vuerc", homeDir + "/.oldvuerc");
-        }
-	else {
+        } else {
             fs.copyFileSync(globalThis.modulePath + "/src/config/.vuerc", homeDir + "/.vuerc");
-	}
+        }
     }
 
     await createFrontend(frontend);
@@ -103,7 +102,7 @@ const updateServiceFiles = (projectName) => {
 const attemptGlobalPackageInstalls = async (globalPackage) => {
     let exists;
     try {
-        const empty = (await exec(`npm list --depth 1 --global ${globalPackage} | grep empty`, false));
+        const empty = (await exec(`npm list --depth 1 --global ${globalPackage} | grep empty`, false, false));
         exists = !(empty ? empty.length > 0 : false);
     } catch (e) {
         exists = true;

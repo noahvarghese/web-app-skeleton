@@ -5,7 +5,7 @@ import Logs, {
     LogLevels
 } from "./logs.js";
 
-export default (cmd, outputToNull = true) => {
+export default (cmd, outputToNull = true, showError = true) => {
     return new Promise((resolve, reject) => {
         exec(`${cmd} ${outputToNull ? "> /dev/null 2>&1" : ""}`, (error, stdout, stderr) => {
             if (error) {
@@ -14,7 +14,9 @@ export default (cmd, outputToNull = true) => {
             }
 
             if (stderr) {
-                Logs.addLog(stderr, LogLevels.ERROR);
+                if (showError) {
+                    Logs.addLog(stderr, LogLevels.ERROR);
+                }
                 reject(false);
             }
 

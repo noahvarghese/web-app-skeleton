@@ -17,7 +17,7 @@ import Logs, {
         try {
             if (Number(versionNumbers[0]) >= 7) {
                 await createWebAppTemplate(name, frontend);
-                let success = false;
+                success = true;
                 return;
             }
         } catch (_) {}
