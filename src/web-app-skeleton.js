@@ -142,11 +142,11 @@ const createFrontend = async (frontend) => {
     } = getTypesAndPackages(frontend.dependencies);
 
     Logs.addLog("Installing frontend dependencies.", LogLevels.LOG);
-    installDependencies(projectPath, dependencies);
+    await installDependencies(projectPath, dependencies);
     Logs.addLog("Installing frontend types.", LogLevels.LOG);
-    installDependencies(projectPath, devDependencies, true);
+    await installDependencies(projectPath, devDependencies, true);
     Logs.addLog("Installing frontend development dependencies.", LogLevels.LOG);
-    installDependencies(projectPath, frontend.devDependencies.join(" "), true);
+    await installDependencies(projectPath, frontend.devDependencies.join(" "), true);
     fs.rmdirSync(projectPath + "/.git", {
         recursive: true
     });
