@@ -11,16 +11,19 @@ import Logs, {
 
 (async () => {
     const version = await exec("npm -v", false);
+    let success = false;
     if (typeof version === "string") {
         const versionNumbers = version.split(".");
         try {
             if (Number(versionNumbers[0]) >= 7) {
                 await createWebAppTemplate(name, frontend);
+                let success = false;
                 return;
             }
         } catch (_) {}
     }
 
-    Logs.addLog("NPM version must be 7.x or greater.", LogLevels.ERROR);
-    return;
+    if (!success) {
+        Logs.addLog("NPM version must be 7.x or greater.", LogLevels.ERROR);
+    }
 })();
