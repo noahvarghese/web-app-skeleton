@@ -9,7 +9,9 @@ export default (cmd, outputToNull = true, showError = true) => {
     return new Promise((resolve, reject) => {
         exec(`${cmd} ${outputToNull ? "> /dev/null 2>&1" : ""}`, (error, stdout, stderr) => {
             if (error) {
-                Logs.addLog(error, LogLevels.ERROR);
+                if (showError) {
+                    Logs.addLog(error, LogLevels.ERROR);
+                }
                 reject(false);
             }
 
