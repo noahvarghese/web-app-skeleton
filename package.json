@@ -1,6 +1,6 @@
 {
     "name": "web-app-skeleton",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "description": "",
     "main": "./cli.js",
     "type": "module",
