@@ -40,9 +40,11 @@ const createWebAppTemplate = async (name, frontend) => {
 
     await createFrontend(frontend);
 
-    fs.unlinkSync(homeDir + "/.vuerc");
-    if (moved) {
-        fse.moveSync(homeDir + "/.oldvuerc", homeDir + "/.vuerc");
+    if (frontend.name.toLowerCase() === "vue") {
+        fs.unlinkSync(homeDir + "/.vuerc");
+        if (moved) {
+            fse.moveSync(homeDir + "/.oldvuerc", homeDir + "/.vuerc");
+        }
     }
 
     updateFrontendPort(frontend);
